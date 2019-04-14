@@ -13,7 +13,8 @@ var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
 
 // Create an SVG wrapper, append an SVG group that will hold our chart, and shift the latter by left and top margins.
-var svg = d3.select(".container")
+var svg = d3
+  .select(".container")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -22,14 +23,14 @@ var chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Import Data
-d3.csv("censusData.csv")
+d3.csv("censusData.csv") 
   .then(function(censusData) {
 
     // Step 1: Parse Data/Cast as numbers
     // ==============================
     censusData.forEach(function(data) {
-      censusData.poverty = +censusData.poverty;
-      censusData.smokes = +censusData.smokes;
+      data.poverty = +data.poverty;
+      data.smokes = +data.smokes;
     });
 
     // Step 2: Create scale functions
@@ -59,14 +60,14 @@ d3.csv("censusData.csv")
     // Step 5: Create Circles
     // ==============================
     var circlesGroup = chartGroup.selectAll("circle")
-    .data(censusData)
-    .enter()
-    .append("circle")
-    .attr("cx", d => xLinearScale(d.poverty))
-    .attr("cy", d => yLinearScale(d.smokes))
-    .attr("r", "10")
-    .attr("fill", "brown")
-    .attr("opacity", ".5");
+      .data(censusData)
+      .enter()
+      .append("circle")
+      .attr("cx", d => xLinearScale(d.poverty))
+      .attr("cy", d => yLinearScale(d.smokes))
+      .attr("r", "10")
+      .attr("fill", "brown")
+      .attr("opacity", ".5");
 
     // Step 6: Initialize tool tip
     // ==============================
