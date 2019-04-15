@@ -19,7 +19,11 @@ var svg = d3
   .attr("width", svgWidth)
   .attr("height", svgHeight);
 
-var chartGroup = svg.append("g")
+var chartGroup1 = svg.append("g")
+  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+var chartGroup2 = svg.append("g")
+  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+ var chartGroup3 = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Import Data
@@ -31,16 +35,18 @@ d3.csv("censusData.csv")
     censusData.forEach(function(data) {
       data.poverty = +data.poverty;
       data.smokes = +data.smokes;
+      data.smokesLow = +data.smokesLow;
+      data.smokesHigh = +data.smokesHigh;
     });
 
     // Step 2: Create scale functions
     // ==============================
     var xLinearScale = d3.scaleLinear()
-      .domain(d3.extent(censusData, d => d.poverty))
+      .domain([8, d3.max(censusData, d => d.poverty)])
       .range([0, width]);
 
     var yLinearScale = d3.scaleLinear()
-      .domain(d3.extent(censusData, d => d.smokes))
+      .domain([8, d3.max(censusData, d => d.smokesHigh)])
       .range([height, 0]);
 
     // Step 3: Create axis functions
@@ -50,49 +56,115 @@ d3.csv("censusData.csv")
 
     // Step 4: Append Axes to the chart
     // ==============================
-    chartGroup.append("g")
+    chartGroup1.append("g")
       .attr("transform", `translate(0, ${height})`)
       .call(bottomAxis);
 
-    chartGroup.append("g")
+    chartGroup1.append("g")
+      .call(leftAxis);
+    
+    chartGroup2.append("g")
+      .attr("transform", `translate(0, ${height})`)
+      .call(bottomAxis);
+
+    chartGroup2.append("g")
+      .call(leftAxis);
+
+    chartGroup3.append("g")
+      .attr("transform", `translate(0, ${height})`)
+      .call(bottomAxis);
+
+    chartGroup3.append("g")
       .call(leftAxis);
 
     // Step 5: Create Circles
     // ==============================
-    var circlesGroup = chartGroup.selectAll("circle")
+    var circlesGroup1 = chartGroup1.append("g").selectAll("circle")
       .data(censusData)
       .enter()
       .append("circle")
       .attr("cx", d => xLinearScale(d.poverty))
       .attr("cy", d => yLinearScale(d.smokes))
-      .attr("r", "10")
+      .attr("r", "15")
       .attr("fill", "brown")
       .attr("opacity", ".5");
 
+    var circlesGroup2 = chartGroup2.append("g").selectAll("circle")
+      .data(censusData)
+      .enter()
+      .append("circle")
+      .attr("cx", d => xLinearScale(d.poverty))
+      .attr("cy", d => yLinearScale(d.smokesHigh))
+      .attr("r", "15")
+      .attr("fill", "red")
+      .attr("opacity", ".5");
+    
+    var circlesGroup3 = chartGroup3.append("g").selectAll("circle")
+      .data(censusData)
+      .enter()
+      .append("circle")
+      .attr("cx", d => xLinearScale(d.poverty))
+      .attr("cy", d => yLinearScale(d.smokesLow))
+      .attr("r", "15")
+      .attr("fill", "yellow")
+      .attr("opacity", ".5");
+      // .append('text')
+      // .text(function(d) { return d.abbr; });
+
     // Step 6: Initialize tool tip
     // ==============================
-    var toolTip = d3.tip()
+    var toolTip1 = d3.tip()
       .attr("class", "tooltip")
       .html(function(d) {
-        return (`<strong>${d.smokes} Percent of ____ residents smoke.  Of those, ${d.poverty} percent live in poverty. </strong>`);
+        return (`<strong>${d.smokes} Percent of ${d.abbr}'s residents smoke. ${d.poverty} percent live in poverty. </strong>`);
+      });
+    
+    var toolTip2 = d3.tip()
+      .attr("class", "tooltip")
+      .html(function(d) {
+        return (`<strong>${d.smokesHigh} Percent of ${d.abbr}'s residents smoke. ${d.poverty} percent live in poverty. </strong>`);
+      });
+
+    var toolTip3 = d3.tip()
+      .attr("class", "tooltip")
+      .html(function(d) {
+        return (`<strong>${d.smokesLow} Percent of ${d.abbr}'s residents smoke. ${d.poverty} percent live in poverty. </strong>`);
       });
 
     // Step 7: Create tooltip in the chart
     // ==============================
-    chartGroup.call(toolTip);
+    chartGroup1.call(toolTip1);
+    chartGroup2.call(toolTip2);
+    chartGroup3.call(toolTip3);
 
     // Step 8: Create event listeners to display and hide the tooltip
     // ==============================
-    circlesGroup.on("click", function(data) {
-      toolTip.show(data, this);
+    circlesGroup1.on("click", function(d) {
+      toolTip1.show(d, this);
     })
       // onmouseout event
-      .on("mouseout", function(data, index) {
-        toolTip.hide(data);
+      .on("mouseout", function(d, index) {
+        toolTip1.hide(d);
+      });
+    
+    circlesGroup2.on("click", function(d) {
+      toolTip2.show(d, this);
+    })
+      // onmouseout event
+      .on("mouseout", function(d, index) {
+         toolTip2.hide(d);
+      });
+
+    circlesGroup3.on("click", function(d) {
+      toolTip3.show(d, this);
+    })
+      // onmouseout event
+      .on("mouseout", function(d, index) {
+          toolTip3.hide(d);
       });
 
     // Create axes labels
-    chartGroup.append("text")
+    chartGroup1.append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - margin.left + 40)
       .attr("x", 0 - (height - 100))
@@ -100,7 +172,7 @@ d3.csv("censusData.csv")
       .attr("class", "axisText")
       .text("Percent of Americans who Smoke");
 
-    chartGroup.append("text")
+    chartGroup1.append("text")
       .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
       .attr("class", "axisText")
       .text("Percent of Americans in Poverty");
