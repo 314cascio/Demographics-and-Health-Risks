@@ -87,7 +87,20 @@ d3.csv("censusData.csv")
       .attr("cy", d => yLinearScale(d.smokes))
       .attr("r", "15")
       .attr("fill", "brown")
-      .attr("opacity", ".5");
+      .attr("opacity", ".4");
+    
+      var text1 = chartGroup1.selectAll("text")
+      .data(censusData)
+      .enter()
+      .append("text");
+    
+      var textLabels1 = text1
+        .attr("x", function(d) { return xLinearScale(d.poverty) -7 } ) 
+        .attr("y", function(d) { return  yLinearScale(d.smokes) })
+        .text( function (d) { return (d.abbr); })
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "10px")
+        .attr("fill", "white");
 
     var circlesGroup2 = chartGroup2.append("g").selectAll("circle")
       .data(censusData)
@@ -99,6 +112,19 @@ d3.csv("censusData.csv")
       .attr("fill", "red")
       .attr("opacity", ".5");
     
+      var text2 = chartGroup2.selectAll("text")
+      .data(censusData)
+      .enter()
+      .append("text");
+    
+      var textLabels2 = text2
+        .attr("x", function(d) { return xLinearScale(d.poverty) -7 } ) 
+        .attr("y", function(d) { return  yLinearScale(d.smokesHigh) })
+        .text( function (d) { return (d.abbr); })
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "10px")
+        .attr("fill", "white");
+      
     var circlesGroup3 = chartGroup3.append("g").selectAll("circle")
       .data(censusData)
       .enter()
@@ -106,10 +132,21 @@ d3.csv("censusData.csv")
       .attr("cx", d => xLinearScale(d.poverty))
       .attr("cy", d => yLinearScale(d.smokesLow))
       .attr("r", "15")
-      .attr("fill", "yellow")
-      .attr("opacity", ".5");
-      // .append('text')
-      // .text(function(d) { return d.abbr; });
+      .attr("fill", "orange")
+      .attr("opacity", ".5")
+      
+      var text3 = chartGroup3.selectAll("text")
+        .data(censusData)
+        .enter()
+        .append("text");
+      
+      var textLabels3 = text3
+        .attr("x", function(d) { return xLinearScale(d.poverty) -7 } ) 
+        .attr("y", function(d) { return  yLinearScale(d.smokesLow) })
+        .text( function (d) { return (d.abbr); })
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "10px")
+        .attr("fill", "white");
 
     // Step 6: Initialize tool tip
     // ==============================
@@ -170,10 +207,10 @@ d3.csv("censusData.csv")
       .attr("x", 0 - (height - 100))
       .attr("dy", "1em")
       .attr("class", "axisText")
-      .text("Percent of Americans who Smoke");
+      .text("Percent of State Residents who Smoke");
 
     chartGroup1.append("text")
-      .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
+      .attr("transform", `translate(${width / 2.5}, ${height + margin.top + 30})`)
       .attr("class", "axisText")
-      .text("Percent of Americans in Poverty");
+      .text("Percent of State Residents in Poverty");
   });
