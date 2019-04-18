@@ -26,6 +26,7 @@ var chartGroup2 = svg.append("g")
  var chartGroup3 = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+
 // Import Data
 d3.csv("censusData.csv") 
   .then(function(censusData) {
@@ -147,6 +148,16 @@ d3.csv("censusData.csv")
         .attr("font-family", "sans-serif")
         .attr("font-size", "10px")
         .attr("fill", "white");
+
+      // Line of Regression
+      var line = d3.line()
+      .xLinearScale(function(d) { return x(d.poverty)})
+      .yLinearScale(function(d) { return y(regression(d.smokes))});
+      
+      svg.append("path")
+      .datum(censusData)
+      .attr("class", "line")
+      .attr("d", line);
 
     // Step 6: Initialize tool tip
     // ==============================
